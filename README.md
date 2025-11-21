@@ -1,4 +1,4 @@
-# DocuSieve – AI-Powered Resume Analyzer 
+# DocuSieve – Local LLM AI-Powered (for now) Resume Analyzer 
 (Local LLM (Ollama) --> Will be upgraded to support cloud-hosted LLMs (OpenAI/Anthropic) in addition to the current local Ollama setup. I will be learning as I go.)
 
 DocuSieve is a resume analyzer that compares a **PDF resume** against a **job description** and generates:
