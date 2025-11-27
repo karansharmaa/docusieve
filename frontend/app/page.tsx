@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-/*export default function Home() {
+export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
@@ -61,21 +61,5 @@ import Image from "next/image";
         </div>
       </main>
     </div>
-  );
-}*/
-export default function Home() {
-  return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="max-w-2xl space-y-4">
-        <h1 className="text-3xl font-bold">DocuSieve</h1>
-        <p className="text-lg text-gray-700">
-          AI-powered resume analyzer that compares your PDF resume against a job description
-          and generates a match score, overlap stats, strengths, weaknesses, and improved bullets.
-        </p>
-        <p className="text-sm text-gray-500">
-          Backend: FastAPI + local LLM (Ollama). Frontend deployed on Vercel.
-        </p>
-      </div>
-    </main>
   );
 }
