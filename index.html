@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DocuSieve</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 40px; background: #0f172a; color: #e5e7eb; }
+    .card { max-width: 720px; margin: 0 auto; background: #020617; padding: 32px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    p { line-height: 1.6; }
+    .tag { display:inline-block; font-size: 0.75rem; padding: 4px 10px; border-radius:999px; border:1px solid #38bdf8; color:#38bdf8; margin-bottom: 16px; }
+    ul { margin-left: 1.2rem; }
+    code { background:#111827; padding:2px 4px; border-radius:4px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="tag">DocuSieve · In Development</div>
+    <h1>AI-Powered Resume Analyzer (Local LLM)</h1>
+    <p>
+      DocuSieve is a backend project built with <strong>FastAPI</strong> and a local LLM
+      (via <strong>Ollama</strong>). It compares a PDF resume against a job description
+      and generates a match score, keyword overlap stats, strengths, weaknesses, and improved bullets.
+    </p>
+    <p>
+      This Vercel page is just a landing page for now. The actual API runs locally on:
+      <code>http://127.0.0.1:8000/docs</code>.
+    </p>
+    <h3>Current capabilities</h3>
+    <ul>
+      <li>PDF resume text extraction</li>
+      <li>Keyword overlap and match scoring</li>
+      <li>Local LLM feedback: strengths, weaknesses, improved bullets</li>
+    </ul>
+    <h3>Planned</h3>
+    <ul>
+      <li>Hosted backend with online LLM (OpenAI/Anthropic)</li>
+      <li>Full web UI to upload resumes and job descriptions</li>
+      <li>Semantic similarity scoring and ATS-style reports</li>
+    </ul>
+  </div>
+</body>
+</html>

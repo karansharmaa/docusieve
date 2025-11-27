@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function Home() {
+/*export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
@@ -61,5 +61,27 @@ export default function Home() {
         </div>
       </main>
     </div>
+  );
+}
+*/
+export default function Home() {
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-100 px-4">
+      <div className="max-w-2xl space-y-4 bg-slate-950/70 p-8 rounded-2xl shadow-xl border border-slate-800">
+        <p className="text-xs uppercase tracking-wide text-sky-400">DocuSieve</p>
+        <h1 className="text-3xl font-bold">AI-powered resume analyzer</h1>
+        <p className="text-sm text-slate-300">
+          Backend: FastAPI + local LLM (Ollama). Compares your PDF resume to a job
+          description and generates a match score, overlap stats, strengths,
+          weaknesses, and improved bullets.
+        </p>
+        <p className="text-xs text-slate-400">
+          This frontend is deployed on Vercel. The analysis API currently runs locally at{" "}
+          <code className="bg-slate-800 px-1 py-0.5 rounded text-[0.7rem]">
+            http://127.0.0.1:8000/docs
+          </code>.
+        </p>
+      </div>
+    </main>
   );
 }
