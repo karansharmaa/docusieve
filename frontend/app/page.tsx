@@ -120,7 +120,7 @@ export default function DocuSievePage() {
           </div>
 
           <div>
-            <h2 className="font-semibold mb-1">AI Feedback</h2>
+            <h2 className="font-semibold mb-1">Feedback</h2>
             <pre className="whitespace-pre-wrap text-sm border rounded-md p-3 bg-white text-black max-h-96 overflow-y-auto">
               {result.llm_feedback}
             </pre>
