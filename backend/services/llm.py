@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+#previously was ran on a local llm. that was unsustainable. 
+#moving on to on an online hosted llm
 #OLLAMA_URL = "http://localhost:11434/api/generate"
 #MODEL_NAME = "llama3.1"  # or whatever model you pulled, e.g. "gemma3:4b"
 #OLLAMA_PATH = r"C:\Users\karan\AppData\Local\Programs\Ollama\ollama.exe"
@@ -14,7 +16,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if not GROQ_API_KEY:
     raise RuntimeError("GROQ_API_KEY environment variable not set")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL_NAME = "llama-3.3-70b-versatile"  # Free, fast Llama model
+MODEL_NAME = "llama-3.3-70b-versatile"  
 
 
 
