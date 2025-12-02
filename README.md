@@ -1,125 +1,123 @@
-# DocuSieve – Local LLM AI-Powered (for now) Resume Analyzer 
-(Local LLM (Ollama) --> Will be upgraded to support cloud-hosted LLMs (OpenAI/Anthropic) in addition to the current local Ollama setup. I will be learning as I go.)
+# DocuSieve – AI-Powered Resume Analyzer (FastAPI + Groq LLM + Next.js) 
 
-DocuSieve is a resume analyzer that compares a **PDF resume** against a **job description** and generates:
+DocuSieve is a resume analyzer that compares a **PDF resume** with a **job description** and generates:
 
-- A match score  
+- ATS-style match score  
 - Skill overlap stats  
 - Strengths  
 - Weaknesses  
 - Improved resume bullet points  
 
-The entire system runs **locally** using **FastAPI** + **Ollama** (local LLM such as `llama3.1`).  
-No cloud APIs. Full privacy.
+The system uses a FastAPI backend and a Next.js frontend, powered by Groq LLMs for fast inference.
+
+---
+
+## Hosting Notice (Free Tier Backend)
+
+This project uses a free-tier Render instance to host the FastAPI backend.  
+Free-tier services go to sleep after approximately 15 minutes of inactivity.
+
+If the app has been inactive, the first request may take 5–10 seconds while the backend wakes up.  
+All subsequent requests are fast.
 
 ---
 
 ## Features
 
 ### PDF Resume Parsing  
-Extracts text from PDF resumes using `pdfplumber`.
+Extracts text from PDF resumes using `pdfplumber` including multi-column and structured resumes.
 
 ### Job Description Analysis  
 Tokenizes and compares extracted resume text with the job description.
 
 ### Keyword Overlap Scoring  
-Basic deterministic scoring:
+Calculates:
 - Resume vocab size  
-- JD vocab size  
-- Overlap examples  
+- Job description vocab size
+- Intersect count
+- Overlap keyword examples  
 - Percentage match score  
 
-### Local LLM Feedback (Ollama)  
-Uses a local model (e.g., `llama3.1`) to generate:
-- A match score (0–100)  
-- 3 strengths  
-- 3 improvement areas  
-- 3 improved resume bullet points  
+### Feedback via Groq LLM 
+Uses `llama-3.3-70b-versatile` via Groq (free-tier) to generate: 
+- ATS score (0–100)  
+- strengths  
+- improvement areas  
+- 5 improved resume bullet points
 
 ### FastAPI Backend  
 Endpoints:
 - `/health`  
 - `/analyze`  
-- `/analyze_llm`  
+- `/analyze_llm`
+
+### Next.js Frontend (currently basic but ux/ui design implementation is upcoming)
+Includes:
+- PDF upload interface
+- Job description input
+- Analysis display
+- Loading state
 
 ---
 
 ## Tech Stack
 
-- **Python 3.9+**
+### Backend
+- **Python 3.10+**
 - **FastAPI**
 - **pdfplumber**
-- **Ollama (local LLM runtime)**
-- **Llama 3.1 / Gemma / Phi-3 (local models)**
+- **Groq API**
+- **Uvicorn**
+- **Render (deployment - currently in progress of setup)**
 
+### Frontend
+- Next.js 14 (App Router)
+- React
+- TailwindCSS
+- Vercel (deployment)
+  
 ---
 
 ## Project Structure
 
-docusieve/ <br>
-backend/ <br>
-main.py <br>
-requirements.txt <br>
-services/ <br>
-parsing.py <br>
-scoring.py <br>
-llm.py <br>
-venv/ <br>
-
+```text
+docusieve/
+├── backend/
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── services/
+│   │   ├── parsing.py
+│   │   ├── scoring.py
+│   │   └── llm.py
+│   └── venv/
+└── frontend/
+    ├── app/
+    │   ├── page.tsx
+    │   └── layout.tsx
+    ├── public/
+    ├── styles/
+```
 
 ---
 
-## How to Run Locally
+## Immediate upcoming Tasks/Steps and Challenges: 
 
-### 1. Clone the repo
+ - Hosting the backend on a service like render such that the **python -m uvicorn main:app --reload** doesn't need to be running at all times on a computer. 
 
-```bash
-git clone https://github.com/karansharmaa/docusieve.git
-cd docusieve/backend
-```
-### 2. Create and activate virtual environment
-```bash
-python -m venv venv
-.\venv\Scripts\Activate
-```
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-### 4. Install Ollama
+## Roadmap
+### In Progress
 
-Download: https://ollama.com/download
+- Improved ATS scoring
+- Full resume rewrite mode
+- PDF report export
+- Cosine similarity scoring using embeddings
+- Section-by-section quality scoring
+- UI improvements
 
-Pull a model:
-```bash
-ollama pull llama3.1
-```
-### 5. Start backend
-```bash
-python -m uvicorn main:app --reload
-```
-### 6. Open API docs
-```bash
-Go to:
-
-http://127.0.0.1:8000/docs
-```
-
-Use /analyze_llm to upload a resume PDF + job description.
-
-Upcoming Tasks/Steps and Challenges: 
-
- - Create a frontend UI (React most likely - but I want to learn other technologies so might use something else)
-
-- Semantic similarity scoring (MiniLM embeddings)
-
-- ATS keyword suggestions
-
-- Full resume rewriting mode
-
-- Export analysis as PDF report
-
-
+### Future Enhancements
+- Support for multiple LLM providers
+- Caching and performance improvements
+- User accounts and saved reports
 ## Author
 
 Karan Sharma<br>
