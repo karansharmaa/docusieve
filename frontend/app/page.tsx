@@ -25,6 +25,10 @@ export default function DocuSievePage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<LlmResponse | null>(null);
 
+  const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0] || null;
+  setResumeFile(file);
+};
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -96,8 +100,13 @@ export default function DocuSievePage() {
           type="file"
           accept="application/pdf"
           className="hidden"
-          onChange={handleSubmit}
+          onChange={handleResumeUpload}
         />
+         {resumeFile && (
+         <p className="mt-2 text-sm text-white">
+          <u>Selected</u>: <span className="font-medium">{resumeFile.name}</span>
+        </p>
+  )}
       </div>
 
       {/* Job Description */}
@@ -112,10 +121,13 @@ export default function DocuSievePage() {
 
       {/* Submit Button */}
       <button
-        type="submit"
-        disabled={loading}
-        className="px-4 py-2 rounded-md border font-semibold disabled:opacity-50"
-      >
+      type="submit"
+      disabled={loading}
+      className="
+        px-4 py-2 rounded-md border font-semibold
+        disabled:opacity-50 disabled:cursor-not-allowed
+        cursor-pointer hover:bg-gray-900 hover:text-white hover:border-gray-900"
+        >
         {loading ? "Analyzing..." : "Get Feedback"}
       </button>
 
@@ -132,8 +144,8 @@ export default function DocuSievePage() {
           <div>
             <h2 className="font-semibold mb-1">Basic Analysis</h2>
             <p>Overlap score: {result.analysis.score.toFixed(2)}</p>
-            <p>JD vocab size: {result.analysis.jd_vocab_size}</p>
-            <p>Resume vocab size: {result.analysis.resume_vocab_size}</p>
+            <p>Job Description vocab size: {result.analysis.jd_vocab_size} words</p>
+            <p>Resume vocab size: {result.analysis.resume_vocab_size} words </p>
             <p>Overlap count: {result.analysis.overlap_count}</p>
           </div>
 
