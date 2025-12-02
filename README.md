@@ -1,4 +1,4 @@
-# DocuSieve – AI-Powered Resume Analyzer (FastAPI + Groq LLM + Next.js) 
+# DocuSieve: AI Powered Resume Analyzer (FastAPI + Groq LLM + Next.js) 
 
 DocuSieve is a resume analyzer that compares a **PDF resume** with a **job description** and generates:
 
