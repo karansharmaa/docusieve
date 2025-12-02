@@ -65,49 +65,67 @@ export default function DocuSievePage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center p-6 gap-6">
-      <h1 className="text-2xl font-bold">DocuSieve – ATS Resume Analyzer</h1>
+  <main className="min-h-screen flex flex-col items-center p-6 gap-6">
+    <h1 className="text-2xl font-bold">DocuSieve – ATS Resume Analyzer</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-xl flex flex-col gap-4 border rounded-xl p-4"
-      >
-        <div>
-          <label className="block mb-1 font-medium">Resume (PDF)</label>
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) => {
-              const file = e.target.files?.[0] || null;
-              setResumeFile(file);
-            }}
-            className="block w-full"
-          />
-        </div>
+    <form
+      onSubmit={handleSubmit}
+      className="w-full max-w-xl flex flex-col gap-4 border rounded-xl p-4"
+    >
+      {/* Resume Upload Section */}
+      <div>
+        <label className="block mb-1 font-medium">Resume (PDF)</label>
 
-        <div>
-          <label className="block mb-1 font-medium">Job Description</label>
-          <textarea
-            className="w-full border rounded-md p-2 min-h-[150px]"
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-4 py-2 rounded-md border font-semibold disabled:opacity-50"
+        <label
+          htmlFor="resume-upload"
+          className="inline-flex items-center gap-2 px-3 py-1.6 bg-gray-200 border border-gray-300 rounded cursor-pointer hover:bg-gray-300 text-black text-sm"
         >
-          {loading ? "Analyzing..." : "Get Feedback"}
-        </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-4 h-4 text-black"
+          >
+            <path d="M12 16a1 1 0 0 1-1-1V7.41l-2.29 2.3a1 1 0 1 1-1.42-1.42l4-4a1 1 0 0 1 1.42 0l4 4a1 1 0 0 1-1.42 1.42L13 7.41V15a1 1 0 0 1-1 1zm-7 4a2 2 0 0 1-2-2v-2a1 1 0 1 1 2 0v2h14v-2a1 1 0 1 1 2 0v2a2 2 0 0 1-2 2H5z"/>
+          </svg>
+          Select file
+        </label>
 
-        {error && (
-          <p className="text-red-600 text-sm">
-            {error}
-          </p>
-        )}
-      </form>
+        <input
+          id="resume-upload"
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          onChange={handleSubmit}
+        />
+      </div>
+
+      {/* Job Description */}
+      <div>
+        <label className="block mb-1 font-medium">Job Description</label>
+        <textarea
+          className="w-full border rounded-md p-2 min-h-[150px]"
+          value={jobDescription}
+          onChange={(e) => setJobDescription(e.target.value)}
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="px-4 py-2 rounded-md border font-semibold disabled:opacity-50"
+      >
+        {loading ? "Analyzing..." : "Get Feedback"}
+      </button>
+
+      {/* Error */}
+      {error && (
+        <p className="text-red-600 text-sm">
+          {error}
+        </p>
+      )}
+    </form>
 
       {result && (
         <section className="w-full max-w-2xl rounded-xl p-4 flex flex-col gap-4 bg-white text-black border">
