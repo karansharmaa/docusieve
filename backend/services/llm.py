@@ -44,7 +44,7 @@ Using all of this, respond with:
 2. Three bullet-point strengths of this resume for this job.
 3. Three bullet-point areas for improvement.
 4. Three example improved resume bullet points.
-5. Tell the user in the very beginning of result the following statement: "Don't give up!"
+5. Tell the user in the very beginning of result the following statement: "They said ""pay for this service."" I said, ""screw it I'll just make the service."
 
 Keep the response concise and structured.
 """.strip()

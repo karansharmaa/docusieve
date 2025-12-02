@@ -1,5 +1,137 @@
-import Image from "next/image";
 
+"use client";
+/*import Image from "next/image";*/
+import React, { useState } from "react";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
+
+type AnalysisResult = {
+  score: number;
+  jd_vocab_size: number;
+  resume_vocab_size: number;
+  overlap_count: number;
+  overlap_examples: string[];
+};
+
+type LlmResponse = {
+  analysis: AnalysisResult;
+  llm_feedback: string;
+};
+
+export default function DocuSievePage() {
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [jobDescription, setJobDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<LlmResponse | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setResult(null);
+
+    if (!resumeFile) {
+      setError("Please upload a PDF resume.");
+      return;
+    }
+    if (!jobDescription.trim()) {
+      setError("Please paste a job description.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("resume", resumeFile);
+      formData.append("job_description", jobDescription);
+
+      const res = await fetch("http://127.0.0.1:8000/analyze_llm", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status}: ${text}`);
+      }
+
+      const data = (await res.json()) as LlmResponse;
+      setResult(data);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen flex flex-col items-center p-6 gap-6">
+      <h1 className="text-2xl font-bold">DocuSieve – ATS Resume Analyzer</h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-xl flex flex-col gap-4 border rounded-xl p-4"
+      >
+        <div>
+          <label className="block mb-1 font-medium">Resume (PDF)</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              setResumeFile(file);
+            }}
+            className="block w-full"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium">Job Description</label>
+          <textarea
+            className="w-full border rounded-md p-2 min-h-[150px]"
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 rounded-md border font-semibold disabled:opacity-50"
+        >
+          {loading ? "Analyzing..." : "Get Feedback"}
+        </button>
+
+        {error && (
+          <p className="text-red-600 text-sm">
+            {error}
+          </p>
+        )}
+      </form>
+
+      {result && (
+        <section className="w-full max-w-2xl rounded-xl p-4 flex flex-col gap-4 bg-white text-black border">
+          <div>
+            <h2 className="font-semibold mb-1">Basic Analysis</h2>
+            <p>Overlap score: {result.analysis.score.toFixed(2)}</p>
+            <p>JD vocab size: {result.analysis.jd_vocab_size}</p>
+            <p>Resume vocab size: {result.analysis.resume_vocab_size}</p>
+            <p>Overlap count: {result.analysis.overlap_count}</p>
+          </div>
+
+          <div>
+            <h2 className="font-semibold mb-1">AI Feedback</h2>
+            <pre className="whitespace-pre-wrap text-sm border rounded-md p-3 bg-white text-black max-h-96 overflow-y-auto">
+              {result.llm_feedback}
+            </pre>
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}
+
+/* skeleton code below */
 /*export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
@@ -64,7 +196,7 @@ import Image from "next/image";
   );
 }
 */
-export default function Home() {
+/*export default function Home() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-100 px-4">
       <div className="max-w-2xl space-y-4 bg-slate-950/70 p-8 rounded-2xl shadow-xl border border-slate-800">
@@ -84,4 +216,4 @@ export default function Home() {
       </div>
     </main>
   );
-}
+}*/
