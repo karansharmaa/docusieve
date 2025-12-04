@@ -4,7 +4,7 @@
 import React, { useState } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
-
+console.log("API_BASE_URL =", API_BASE_URL);
 type AnalysisResult = {
   score: number;
   jd_vocab_size: number;
@@ -50,7 +50,7 @@ export default function DocuSievePage() {
       formData.append("resume", resumeFile);
       formData.append("job_description", jobDescription);
 
-      const res = await fetch("${API_BASE_URL}/analyze_llm", {
+      const res = await fetch(`${API_BASE_URL}/analyze_llm`, {
         method: "POST",
         body: formData,
       });
