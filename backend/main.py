@@ -19,6 +19,14 @@ app.add_middleware(
 async def health():
     return {"status": "ok"}
 
+@app.get("/healthz")
+async def healthz():
+    return {"status": "ok"}
+
+@app.get("/")
+async def root():
+    return {"status": "ok"}
+
 @app.post("/analyze")
 async def analyze(
     resume: UploadFile = File(...),
