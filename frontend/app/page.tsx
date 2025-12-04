@@ -50,7 +50,7 @@ export default function DocuSievePage() {
       formData.append("resume", resumeFile);
       formData.append("job_description", jobDescription);
 
-      const res = await fetch("http://127.0.0.1:8000/analyze_llm", {
+      const res = await fetch("${API_BASE_URL}/analyze_llm", {
         method: "POST",
         body: formData,
       });
