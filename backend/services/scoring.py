@@ -2,22 +2,25 @@ import re
 from collections import Counter
 from typing import Dict, List, Tuple
 
-STOP = {
-  "a","an","the","and","or","to","of","in","on","for","with","by","as","at","from",
-  "is","are","be","this","that","it","you","we","they","their","our","your"
+
+# Keep common tech tokens (c++, c#, tcp/ip, ipv4/ipv6, l2/l3, ci/cd, 32-bit, etc.)
+TOKEN_RE = re.compile(r"[a-z0-9]+(?:[+\-/#.][a-z0-9]+)*|c\+\+|c#")
+
+STOPWORDS = {
+    "a", "an", "the", "and", "or", "to", "of", "in", "on", "for", "with", "by", "as", "at", "from",
+    "is", "are", "be", "this", "that", "it", "you", "we", "they", "their", "our", "your", "when",
+    "also", "will", "should", "have", "has", "had", "must", "can", "could", "would", "may", "might",
+    "into", "than", "then", "through", "across", "within", "over", "under", "up", "down", "out",
 }
 
-def is_good_phrase(p: str) -> bool:
-    words = p.split()
-    # reject if any word is a stopword OR if phrase is mostly stopwords
-    stop_count = sum(1 for w in words if w in STOP)
-    if stop_count >= 1:
-        return False
-    return True
+
 def tokenize(text: str) -> List[str]:
+    """
+    Lowercase, then extract 'tech-friendly' tokens.
+    Examples preserved: c++, c#, tcp/ip, ipv4/ipv6, l2/l3, ci/cd, 32-bit
+    """
     text = text.lower()
-    # keep only words (same as you had)
-    return re.findall(r"[a-zA-Z]+", text)
+    return TOKEN_RE.findall(text)
 
 
 def make_ngrams(tokens: List[str], n: int) -> List[str]:
@@ -32,9 +35,29 @@ def phrase_counter(tokens: List[str], ns: Tuple[int, ...] = (2, 3)) -> Counter:
 
 
 def phrase_weight(phrase: str) -> float:
-    # trigram gets higher weight than bigram
+    # trigram > bigram
     n = phrase.count(" ") + 1
     return 2.0 if n == 3 else 1.0
+
+
+def is_skillish_phrase(phrase: str) -> bool:
+    """
+    Filters out filler n-grams.
+    Keeps phrases that look like skills/tech and drops those with stopwords.
+    """
+    words = phrase.split()
+
+    # Drop anything containing stopwords (kills "of the", "with a", etc.)
+    if any(w in STOPWORDS for w in words):
+        return False
+
+    # Drop phrases with very short tokens (but allow common short tech tokens)
+    allowed_short = {"c", "go", "js", "os", "ip", "ai", "ml", "db", "ui", "ux"}
+    for w in words:
+        if len(w) < 3 and w not in allowed_short:
+            return False
+
+    return True
 
 
 def basic_overlap_score(resume_text: str, jd_text: str) -> Dict:
@@ -43,23 +66,25 @@ def basic_overlap_score(resume_text: str, jd_text: str) -> Dict:
 
     resume_vocab = set(resume_tokens)
     jd_vocab = set(jd_tokens)
+
     token_overlap = resume_vocab & jd_vocab
 
-    # --- existing keyword score (unchanged meaning) ---
+    # Keyword overlap score (original meaning)
     keyword_score = (len(token_overlap) / len(jd_vocab) * 100) if jd_vocab else 0.0
 
-    # --- NEW: phrase overlap (bigrams + trigrams) ---
-    resume_text_lc = " ".join(resume_tokens)  # normalized resume string
+    # Phrase scoring (bigrams + trigrams)
+    # Use normalized token stream so "tcp/ip" and "l2/l3" can match.
+    resume_norm = " ".join(resume_tokens)
+
     jd_phrases = phrase_counter(jd_tokens, ns=(2, 3))
 
-    # light filtering to avoid garbage phrases
-    # (keeps phrases with 5+ chars and no super-short words-only sequences)
-    filtered_phrases = {p for p in jd_phrases.keys() if len(p) >= 5}
+    # Filter junk phrases
+    filtered_phrases = {p for p in jd_phrases.keys() if is_skillish_phrase(p)}
 
     phrase_hits = []
     phrase_misses = []
     for p in filtered_phrases:
-        if p in resume_text_lc:
+        if p in resume_norm:
             phrase_hits.append(p)
         else:
             phrase_misses.append(p)
@@ -68,18 +93,18 @@ def basic_overlap_score(resume_text: str, jd_text: str) -> Dict:
     hit_phrase_weight = sum(phrase_weight(p) for p in phrase_hits)
     phrase_score = 100.0 * hit_phrase_weight / total_phrase_weight
 
-    # --- NEW: combined score (tweak weights later) ---
+    # Combined score (same weights you used)
     combined_score = 0.75 * keyword_score + 0.25 * phrase_score
 
     return {
-        # keep old keys so nothing breaks
+        # Backward-compatible fields
         "score": round(keyword_score, 2),
         "jd_vocab_size": len(jd_vocab),
         "resume_vocab_size": len(resume_vocab),
         "overlap_count": len(token_overlap),
         "overlap_examples": sorted(list(token_overlap))[:20],
 
-        # new fields
+        # New fields
         "phrase_score": round(phrase_score, 2),
         "phrase_hits": sorted(phrase_hits)[:50],
         "phrase_misses": sorted(phrase_misses)[:50],
