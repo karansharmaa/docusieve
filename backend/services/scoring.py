@@ -2,7 +2,18 @@ import re
 from collections import Counter
 from typing import Dict, List, Tuple
 
+STOP = {
+  "a","an","the","and","or","to","of","in","on","for","with","by","as","at","from",
+  "is","are","be","this","that","it","you","we","they","their","our","your"
+}
 
+def is_good_phrase(p: str) -> bool:
+    words = p.split()
+    # reject if any word is a stopword OR if phrase is mostly stopwords
+    stop_count = sum(1 for w in words if w in STOP)
+    if stop_count >= 1:
+        return False
+    return True
 def tokenize(text: str) -> List[str]:
     text = text.lower()
     # keep only words (same as you had)
