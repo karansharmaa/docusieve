@@ -43,6 +43,8 @@ async def analyze(
     return {
         "resume_chars": len(resume_text),
         "job_description_chars": len(job_description),
+        # NEW: top-level score (combined if present)
+        "score": stats.get("combined_score", stats.get("score")),
         "analysis": stats,
     }
 
@@ -57,12 +59,15 @@ async def analyze_llm(
 
     file_bytes = await resume.read()
     resume_text = extract_text_from_pdf(file_bytes)
+
     stats = basic_overlap_score(resume_text, job_description)
 
     prompt = build_feedback_prompt(resume_text, job_description, stats)
     llm_output = call_groq_llm(prompt)
 
     return {
+        # NEW: top-level score for frontend
+        "score": stats.get("combined_score", stats.get("score")),
         "analysis": stats,
         "llm_feedback": llm_output,
     }
