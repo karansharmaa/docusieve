@@ -1,4 +1,25 @@
 import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "DocuSieve — ATS Resume Analyzer",
+  description: "Resume analysis for people who actually read the JD.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+
+/* OLD DATA
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -31,4 +52,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+}*/
