@@ -497,7 +497,7 @@ export default function DocuSievePage() {
                 <div className="input-col">
                   <p className="col-head">01 — Your resume</p>
                   <p className="col-headline">Drop your résumé.<br />We&apos;ll do the rest.</p>
-                  <p className="col-body">PDF only. We extract, normalize, and score it against the role — no cloud storage, no fluff.</p>
+                  <p className="col-body">PDF only. We extract, normalize, and score it against the role. No cloud storage, no fluff.</p>
                   <input ref={fileInputRef} type="file" accept="application/pdf" style={{ display: "none" }} onChange={handleResumeUpload} />
                   {!resumeFile ? (
                     <div className="upload-zone" onClick={() => fileInputRef.current?.click()}>
