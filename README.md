@@ -107,22 +107,30 @@ docusieve/
 
 ## Immediate upcoming Tasks/Steps and Challenges: 
 
- - Hosting the backend on a service like render such that the **python -m uvicorn main:app --reload** doesn't need to be running at all times on a computer. 
+ - Hosting the backend on a service like render such that the **python -m uvicorn main:app --reload** doesn't need to be running at all times on a computer. (SOLVED)
+ - Phrase scoring currently extracts n-grams from the raw job description, which means HR/legal boilerplate ("equal opportunity employer", "visa sponsorship", "12-week onboarding") can surface as missed phrases even when they're irrelevant to your qualifications. (IN PROGRESS)
 
 ## Roadmap
-### In Progress
 
-- Improved ATS scoring
+### DONE 
+
 - Full resume rewrite mode
 - PDF report export
-- Cosine similarity scoring using embeddings
 - Section-by-section quality scoring
 - UI improvements
-
-### Future Enhancements
 - Support for multiple LLM providers
 - Caching and performance improvements
 - User accounts and saved reports
+  
+### In Progress
+
+-  Improved ATS scoring (could be refined even more)
+-  Improving the quality of n-grams extracted from JD. Currently picking up non-useful terms. 
+
+## Future Enhancements 
+
+- Cosine similarity scoring using embeddings
+  
 ## Author
 
 Karan Sharma<br>
