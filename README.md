@@ -22,9 +22,9 @@ If the app has been inactive, the first request may take 5–10 seconds while th
 All subsequent requests are fast.
 
 ---
-## ** CURRENT PROBLEM ** Known Limitation: JD Boilerplate in Phrase Scoring
+## ** CURRENT PROBLEM ** Known Limitation: JD filler terms in Phrase Scoring
 
-Phrase scoring currently extracts n-grams from the raw job description, which means HR/legal boilerplate ("equal opportunity employer", "visa sponsorship", "12-week onboarding") can surface as missed phrases even when they're irrelevant to your qualifications. Currently working on a fix that uses an LLM pre-processing step to strip the JD down to skills and requirements before scoring. Also currently researching to see if there's any other way to do this besides LLM pre-processing. 
+Phrase scoring currently extracts n-grams from the raw job description, which means HR/legal filler terms ("equal opportunity employer", "visa sponsorship", "12-week onboarding") can surface as missed phrases even when they're irrelevant to your qualifications. Currently working on a fix that uses an LLM pre-processing step to strip the JD down to skills and requirements before scoring. Also currently researching to see if there's any other way to do this besides LLM pre-processing. 
 
 --- 
 ## Features
