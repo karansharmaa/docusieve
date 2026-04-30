@@ -1,4 +1,5 @@
 # DocuSieve: AI Powered Resume Analyzer (FastAPI + Groq LLM + Next.js) 
+## Currently on v2.0
 
 DocuSieve is a resume analyzer that compares a **PDF resume** with a **job description** and generates:
 
@@ -21,7 +22,11 @@ If the app has been inactive, the first request may take 5–10 seconds while th
 All subsequent requests are fast.
 
 ---
+## Known Limitation: JD Boilerplate in Phrase Scoring
 
+Phrase scoring currently extracts n-grams from the raw job description, which means HR/legal boilerplate ("equal opportunity employer", "visa sponsorship", "12-week onboarding") can surface as missed phrases even when they're irrelevant to your qualifications. A fix is in progress that uses an LLM pre-processing step to strip the JD down to skills and requirements before scoring.
+
+--- 
 ## Features
 
 ### PDF Resume Parsing  
