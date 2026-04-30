@@ -497,7 +497,7 @@ export default function DocuSievePage() {
                 <div className="input-col">
                   <p className="col-head">01 — Your resume</p>
                   <p className="col-headline">Drop your résumé.<br />We&apos;ll do the rest.</p>
-                  <p className="col-body">PDF only. We extract, normalize, and score it against the role. No cloud storage, no fluff.</p>
+                  <p className="col-body">PDF only. We extract, normalize, and score it against the role.</p>
                   <input ref={fileInputRef} type="file" accept="application/pdf" style={{ display: "none" }} onChange={handleResumeUpload} />
                   {!resumeFile ? (
                     <div className="upload-zone" onClick={() => fileInputRef.current?.click()}>
@@ -522,7 +522,7 @@ export default function DocuSievePage() {
                 <div className="input-col">
                   <p className="col-head">02 — The job</p>
                   <p className="col-headline">Paste the JD.<br />We&apos;ll read the room.</p>
-                  <p className="col-body">We strip the fluff and score only what recruiters actually care about.</p>
+                  <p className="col-body">We score only what recruiters actually care about.</p>
                   <p className="field-label">Job description</p>
                   <textarea
                     className="jd-textarea"
