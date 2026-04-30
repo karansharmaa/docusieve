@@ -20,6 +20,46 @@ MODEL_NAME = "llama-3.3-70b-versatile"
 
 import json
 
+def extract_jd_skills(jd_text: str) -> str:
+    """
+    Use LLM to strip a job description down to only skills, tools,
+    languages, and qualifications. Removes boilerplate like benefits,
+    legal disclaimers, and logistics.
+    """
+    prompt = f"""
+Extract only the technical skills, tools, programming languages, frameworks, and qualifications from the job description below.
+
+Rules:
+- Return only a plain list of skills and requirements, one per line.
+- Do NOT include company culture, benefits, salary, work hours, location, legal disclaimers, or HR boilerplate.
+- Do NOT add any explanation or preamble. Just the list.
+
+Job description:
+{jd_text}
+""".strip()
+
+    payload = {
+        "model": MODEL_NAME,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1,
+        "max_tokens": 500
+    }
+
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        response = requests.post(GROQ_URL, json=payload, headers=headers, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        return data["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        # Fall back to raw JD if extraction fails
+        return jd_text
+    
+    
 def build_feedback_prompt(resume_text: str, jd_text: str, stats: dict) -> str:
     """
     Build a prompt for the local LLM based on the extracted resume text,

@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from services.parsing import extract_text_from_pdf
 from services.scoring import basic_overlap_score
 from services.llm import build_feedback_prompt, call_groq_llm
+from services.llm import build_feedback_prompt, call_groq_llm, extract_jd_skills
+
 
 app = FastAPI(title="DocuSieve")
 
@@ -38,16 +40,15 @@ async def analyze(
     file_bytes = await resume.read()
     resume_text = extract_text_from_pdf(file_bytes)
 
-    stats = basic_overlap_score(resume_text, job_description)
+    cleaned_jd = extract_jd_skills(job_description)
+    stats = basic_overlap_score(resume_text, cleaned_jd)
 
     return {
         "resume_chars": len(resume_text),
         "job_description_chars": len(job_description),
-        # NEW: top-level score (combined if present)
         "score": stats.get("combined_score", stats.get("score")),
         "analysis": stats,
     }
-
 
 @app.post("/analyze_llm")
 async def analyze_llm(
@@ -60,13 +61,13 @@ async def analyze_llm(
     file_bytes = await resume.read()
     resume_text = extract_text_from_pdf(file_bytes)
 
-    stats = basic_overlap_score(resume_text, job_description)
+    cleaned_jd = extract_jd_skills(job_description)
+    stats = basic_overlap_score(resume_text, cleaned_jd)
 
     prompt = build_feedback_prompt(resume_text, job_description, stats)
     llm_output = call_groq_llm(prompt)
 
     return {
-        # NEW: top-level score for frontend
         "score": stats.get("combined_score", stats.get("score")),
         "analysis": stats,
         "llm_feedback": llm_output,
