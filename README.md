@@ -1,6 +1,10 @@
 # DocuSieve: AI Powered Resume Analyzer (FastAPI + Groq LLM + Next.js) 
 ## Currently on v2.0
 
+## New Problem That Needs To Be Solved ~ v3.0: Semantic Phrase Matching
+The current phrase matching is based on bigram/trigram overlap, which I knew was a simplified approach when I built it but went with anyway to get something deterministic and shippable. After doing more research and actually running my own resume through it, I realized how naive and outdated that method is. Modern ATS platforms moved past exact phrase matching a long time ago and use semantic similarity instead. Working on replacing the phrase match component with embedding-based scoring so the results actually reflect how these systems work in the real world. 
+##
+
 DocuSieve is a resume analyzer that compares a **PDF resume** with a **job description** and generates:
 
 - ATS-style match score  
@@ -22,7 +26,7 @@ If the app has been inactive, the first request may take 5–10 seconds while th
 All subsequent requests are fast.
 
 ---
-## ** CURRENT PROBLEM ** Known Limitation: JD filler terms in Phrase Scoring
+## ** CURRENT PROBLEM ** Known Limitation: JD filler terms in Phrase Scoring -- -- SOLVED! added bi-gram/tri-gram scoring which solved this issue!
 
 Phrase scoring currently extracts n-grams from the raw job description, which means HR/legal filler terms ("equal opportunity employer", "visa sponsorship", "12-week onboarding") can surface as missed phrases even when they're irrelevant to your qualifications. Currently working on a fix that uses an LLM pre-processing step to strip the JD down to skills and requirements before scoring. Also currently researching to see if there's any other way to do this besides LLM pre-processing. 
 
@@ -108,7 +112,8 @@ docusieve/
 ## Immediate upcoming Tasks/Steps and Challenges: 
 
  - Hosting the backend on a service like render such that the **python -m uvicorn main:app --reload** doesn't need to be running at all times on a computer. (SOLVED)
- - Phrase scoring currently extracts n-grams from the raw job description, which means HR/legal boilerplate ("equal opportunity employer", "visa sponsorship", "12-week onboarding") can surface as missed phrases even when they're irrelevant to your qualifications. (IN PROGRESS)
+ - Phrase scoring currently extracts n-grams from the raw job description, which means HR/legal boilerplate ("equal opportunity employer", "visa sponsorship", "12-week onboarding") can surface as missed phrases even when they're irrelevant to your qualifications. (SOLVED)
+ - Built phrase matching with bigram/trigram overlap as a simple starting point, but after research and testing it on my own resume, realized how naive and outdated that approach is. Replacing it with embedding-based semantic similarity to reflect how modern ATS systems actually work. (RESEARCHING)
 
 ## Roadmap
 
@@ -121,15 +126,17 @@ docusieve/
 - Support for multiple LLM providers
 - Caching and performance improvements
 - User accounts and saved reports
+- Improving the quality of n-grams extracted from JD. Currently picking up non-useful terms. 
   
 ### In Progress
 
 -  Improved ATS scoring (could be refined even more)
--  Improving the quality of n-grams extracted from JD. Currently picking up non-useful terms. 
+-  Semantic scoring
+
 
 ## Future Enhancements 
 
-- Cosine similarity scoring using embeddings
+- Handling rate limit errors. Make it look better for the user instead of them seeing 'load error'. 
   
 ## Author
 
