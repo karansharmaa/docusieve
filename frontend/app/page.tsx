@@ -315,8 +315,20 @@ export default function DocuSievePage() {
             I built DocuSieve so that there can be more transparency on how an ATS filter reads your resume.
           </p>
           <div className="ds-cta-row">
-            <button className="ds-cta-main" onClick={() => fileInputRef.current?.click()}>
-              Upload resume
+            <button className="ds-cta-main"
+              onClick={() => {
+              if (result) {
+                setResult(null);
+                setError(null);
+                setResumeFile(null);
+                setJobDescription("");
+                setCooldown(0);
+              } else {
+                fileInputRef.current?.click();
+              }
+            }}
+                >
+            {result ? "New analysis" : "Upload resume"}
             </button>
             <span className="ds-cta-note">No sign-up needed</span>
           </div>
