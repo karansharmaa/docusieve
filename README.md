@@ -1,7 +1,7 @@
 # DocuSieve: AI Powered Resume Analyzer (FastAPI + Groq LLM + Next.js) 
-## Currently on v2.0
+## Currently on v3.0
 
-## New Problem That Needs To Be Solved ~ v3.0: Semantic Phrase Matching
+## New Problem That Needs To Be Solved ~ v3.1: Semantic Phrase Matching
 The current phrase matching is based on bigram/trigram overlap, which I knew was a simplified approach when I built it but went with anyway to get something deterministic and shippable. After doing more research and actually running my own resume through it, I realized how naive and outdated that method is. Modern ATS platforms moved past exact phrase matching a long time ago and use semantic similarity instead. Working on replacing the phrase match component with embedding-based scoring so the results actually reflect how these systems work in the real world. 
 ##
 
