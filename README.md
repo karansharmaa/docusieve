@@ -1,5 +1,5 @@
 # DocuSieve: AI Powered Resume Analyzer (FastAPI + Groq LLM + Next.js) 
-## Currently on v3.0
+## Currently on v3.1
 
 ## v3.1: Semantic Phrase Matching — SHIPPED
 Added a semantic scoring layer using Groq LLM that checks phrase misses against the resume and returns implied skill matches. Semantic hits show as amber chips in the UI, filtered out of missing chips to avoid contradiction.
