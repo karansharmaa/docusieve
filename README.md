@@ -1,9 +1,8 @@
 # DocuSieve: AI Powered Resume Analyzer (FastAPI + Groq LLM + Next.js) 
 ## Currently on v3.0
 
-## New Problem That Needs To Be Solved ~ v3.1: Semantic Phrase Matching
-The current phrase matching is based on bigram/trigram overlap, which I knew was a simplified approach when I built it but went with anyway to get something deterministic and shippable. After doing more research and actually running my own resume through it, I realized how naive and outdated that method is. Modern ATS platforms moved past exact phrase matching a long time ago and use semantic similarity instead. Working on replacing the phrase match component with embedding-based scoring so the results actually reflect how these systems work in the real world. 
-##
+## v3.1: Semantic Phrase Matching — SHIPPED
+Added a semantic scoring layer using Groq LLM that checks phrase misses against the resume and returns implied skill matches. Semantic hits show as amber chips in the UI, filtered out of missing chips to avoid contradiction.
 
 DocuSieve is a resume analyzer that compares a **PDF resume** with a **job description** and generates:
 
@@ -60,7 +59,7 @@ Endpoints:
 - `/analyze`  
 - `/analyze_llm`
 
-### Next.js Frontend (currently basic but ux/ui design implementation is upcoming)
+### Next.js Frontend (v3 redesign — modern SaaS UI, light/dark mode, responsive mobile layout)
 Includes:
 - PDF upload interface
 - Job description input
@@ -126,17 +125,23 @@ docusieve/
 - Support for multiple LLM providers
 - Caching and performance improvements
 - User accounts and saved reports
-- Improving the quality of n-grams extracted from JD. Currently picking up non-useful terms. 
+- Improving the quality of n-grams extracted from JD. Currently picking up non-useful terms.
+- Handling rate limit errors. Make it look better for the user instead of them seeing 'load error'. 
+- Semantic scoring
   
 ### In Progress
 
 -  Improved ATS scoring (could be refined even more)
--  Semantic scoring
+
 
 
 ## Future Enhancements 
+- Account creation.
+- Save reports.
+- Database integration for accounts + their reports.
+- ??? Resume rewrite mode — full AI rewrite of the resume tailored to the JD
+- Resume diff view: show exactly which words/phrases to add to your resume to improve the score
 
-- Handling rate limit errors. Make it look better for the user instead of them seeing 'load error'. 
   
 ## Author
 
