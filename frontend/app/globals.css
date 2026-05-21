@@ -77,6 +77,12 @@ html, body {
   transition: background 0.2s, color 0.2s;
 }
 
+[data-theme="dark"] .ds-chip-semantic {
+  background: rgba(146, 64, 14, 0.2);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.25);
+}
+
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg2); }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }

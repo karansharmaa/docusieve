@@ -3,8 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from services.parsing import extract_text_from_pdf
 from services.scoring import basic_overlap_score
-from services.llm import build_feedback_prompt, call_groq_llm
-from services.llm import build_feedback_prompt, call_groq_llm, extract_jd_skills
+from services.llm import build_feedback_prompt, call_groq_llm, extract_jd_skills, semantic_score
 
 
 app = FastAPI(title="DocuSieve")
@@ -43,6 +42,9 @@ async def analyze(
     cleaned_jd = extract_jd_skills(job_description)
     stats = basic_overlap_score(resume_text, cleaned_jd)
 
+    semantic_hits = semantic_score(resume_text, stats.get("phrase_misses", []))
+    stats["semantic_hits"] = semantic_hits
+
     return {
         "resume_chars": len(resume_text),
         "job_description_chars": len(job_description),
@@ -63,6 +65,9 @@ async def analyze_llm(
 
     cleaned_jd = extract_jd_skills(job_description)
     stats = basic_overlap_score(resume_text, cleaned_jd)
+
+    semantic_hits = semantic_score(resume_text, stats.get("phrase_misses", []))
+    stats["semantic_hits"] = semantic_hits
 
     prompt = build_feedback_prompt(resume_text, job_description, stats)
     llm_output = call_groq_llm(prompt)
