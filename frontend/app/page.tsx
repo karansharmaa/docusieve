@@ -51,6 +51,7 @@ export default function DocuSievePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("JD at submit start:", jobDescription);
     setError(null);
     setResult(null);
     if (!resumeFile) { setError("Please upload a PDF resume."); return; }
@@ -63,6 +64,7 @@ export default function DocuSievePage() {
       const res = await fetch(`${API_BASE_URL}/analyze_llm`, { method: "POST", body: formData });
       if (!res.ok) { const text = await res.text(); throw new Error(`HTTP ${res.status}: ${text}`); }
       const data = (await res.json()) as LlmResponse;
+      console.log("JD before setResult:", jobDescription);
       setResult(data);
       if (data.llm_feedback === "[LLM ERROR] RATE_LIMIT") {
         setCooldown(60);

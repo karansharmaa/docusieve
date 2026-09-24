@@ -5,26 +5,34 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-#previously was ran on a local llm. that was unsustainable. 
-#moving on to on an online hosted llm
-#OLLAMA_URL = "http://localhost:11434/api/generate"
-#MODEL_NAME = "llama3.1"  # or whatever model you pulled, e.g. "gemma3:4b"
-#OLLAMA_PATH = ****REDACTED****
-# Groq API Configuration
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise RuntimeError("GEMINI_API_KEY environment variable not set")
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-if not GROQ_API_KEY:
-    raise RuntimeError("GROQ_API_KEY environment variable not set")
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL_NAME = "llama-3.3-70b-versatile"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key={GEMINI_API_KEY}"
+
+def _call_gemini(prompt: str, max_tokens: int = 1000) -> str:
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.7,
+            "maxOutputTokens": max_tokens
+        }
+    }
+    try:
+        response = requests.post(GEMINI_URL, json=payload, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except requests.HTTPError as e:
+        if e.response is not None and e.response.status_code == 429:
+            return "[LLM ERROR] RATE_LIMIT"
+        return f"[LLM ERROR] HTTPError {e.response.status_code if e.response is not None else 'unknown'}"
+    except Exception as e:
+        return f"[LLM ERROR] {type(e).__name__}: {str(e)}"
 
 
 def extract_jd_skills(jd_text: str) -> str:
-    """
-    Use LLM to strip a job description down to only skills, tools,
-    languages, and qualifications. Removes boilerplate like benefits,
-    legal disclaimers, and logistics.
-    """
     prompt = (
         "Extract only the technical skills, tools, programming languages, frameworks, and qualifications from the job description below.\n\n"
         "Rules:\n"
@@ -33,33 +41,13 @@ def extract_jd_skills(jd_text: str) -> str:
         "- Do NOT add any explanation or preamble. Just the list.\n\n"
         f"Job description:\n{jd_text}"
     )
-
-    payload = {
-        "model": MODEL_NAME,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.1,
-        "max_tokens": 500
-    }
-
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    try:
-        response = requests.post(GROQ_URL, json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
-        data = response.json()
-        return data["choices"][0]["message"]["content"].strip()
-    except Exception:
+    result = _call_gemini(prompt, max_tokens=500)
+    if result.startswith("[LLM ERROR]"):
         return jd_text
+    return result
 
 
 def semantic_score(resume_text: str, phrase_misses: list[str]) -> list[str]:
-    """
-    For each phrase miss, ask Groq if the resume demonstrates that skill
-    in different words. Returns a list of semantic hits.
-    """
     if not phrase_misses:
         return []
 
@@ -78,39 +66,19 @@ def semantic_score(resume_text: str, phrase_misses: list[str]) -> list[str]:
         f"Resume text:\n{resume_text[:3000]}"
     )
 
-    payload = {
-        "model": MODEL_NAME,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.1,
-        "max_tokens": 500
-    }
-
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
+    result = _call_gemini(prompt, max_tokens=500)
     try:
-        response = requests.post(GROQ_URL, json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
-        data = response.json()
-        raw = data["choices"][0]["message"]["content"].strip()
-        raw = raw.replace("```json", "").replace("```", "").strip()
-        result = json.loads(raw)
-        if isinstance(result, list):
-            return [p for p in result if p in phrase_misses]
+        raw = result.replace("```json", "").replace("```", "").strip()
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            return [p for p in parsed if p in phrase_misses]
         return []
     except Exception:
         return []
 
 
 def build_feedback_prompt(resume_text: str, jd_text: str, stats: dict) -> str:
-    """
-    Build a prompt for the LLM based on the extracted resume text,
-    job description, and deterministic analysis.
-    """
     final_score = stats.get("combined_score", stats.get("score"))
-
     phrase_hits = stats.get("phrase_hits", [])
     phrase_misses = stats.get("phrase_misses", [])
     semantic_hits = stats.get("semantic_hits", [])
@@ -140,9 +108,9 @@ Job description (truncated):
 Keyword overlap analysis (JSON):
 {json.dumps(stats, indent=2)}
 
-DETECTED (present in resume — use these naturally, do NOT reference variable names in your response):
+DETECTED (present in resume):
 - Exact phrase matches: {phrase_hits[:25]}
-- Implied skills (resume shows these without exact wording): {semantic_hits[:15]}
+- Implied skills: {semantic_hits[:15]}
 - Keyword matches: {overlap_examples[:20]}
 
 MISSING (not found in resume):
@@ -150,54 +118,24 @@ MISSING (not found in resume):
 
 Using all of this, respond with:
 
-Tell the user in the very beginning of result the following statement:
+Tell the user in the very beginning:
 "Hey, thanks for using this service. This will only get better!"
 
 Then:
 
 1. Overall match score: {final_score}
    - Give a short justification using exact phrase matches and implied skills (strength) and gaps (weaknesses).
-2. Three bullet-point strengths (ONLY from exact phrase matches or implied skills. If none exist, note the resume shows foundational relevance but lacks strong phrase alignment. Never reference internal variable names).
-3. Three bullet-point areas for improvement (ONLY from gaps).
+2. Three bullet-point strengths (ONLY from exact phrase matches or implied skills. If none exist, note the resume shows foundational relevance but lacks strong phrase alignment.)
+3. Three bullet-point areas for improvement (ONLY from gaps. If no gaps, say so once.)
 4. Three example improved resume bullet points:
    - Each bullet MUST start with "If applicable,"
-   - Each bullet MUST include 1–2 phrases taken EXACTLY from gaps.
-   - Do not claim the candidate already has that experience.
+   - Each bullet MUST include 1-2 phrases taken EXACTLY from gaps.
+   - If no gaps exist, skip this section and say "No gaps identified."
 
 Keep the response concise and structured.
 """.strip()
 
 
 def call_groq_llm(prompt: str) -> str:
-    """
-    Call the Groq API and return the response text.
-    """
-    try:
-        payload = {
-            "model": MODEL_NAME,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.7,
-            "max_tokens": 1000
-        }
-
-        headers = {
-            "Authorization": f"Bearer {GROQ_API_KEY}",
-            "Content-Type": "application/json"
-        }
-
-        response = requests.post(GROQ_URL, json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
-
-        data = response.json()
-        if "choices" not in data or not data["choices"]:
-            return "[LLM ERROR] Empty response from Groq"
-
-        return data["choices"][0]["message"]["content"].strip()
-
-    except requests.HTTPError as e:
-        body = e.response.text if e.response is not None else ""
-        if e.response is not None and e.response.status_code == 429:
-            return "[LLM ERROR] RATE_LIMIT"
-        return f"[LLM ERROR] HTTPError: {e} | Body: {body}"
-    except Exception as e:
-        return f"[LLM ERROR] {type(e).__name__}: {str(e)}"
+    result = _call_gemini(prompt, max_tokens=1000)
+    return result
