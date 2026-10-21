@@ -3,8 +3,8 @@
 
 ## v3.2: ISSUE: GROQ ended support for llama-3.3-70b-versatile. (FIXED) 
 I learned that GROQ had discontinued the model **llama-3.3-70b-versatile**. To adapt to this change, I researched what the best model would be to make it so that this program stays functional - that the feedback given by the LLM is real and not erroring out. 
-The LLM that DocuSieve runs on now Google Gemini-3.1-flash-late. 
-Thet benefits of this model is the efficiency and generous token limits. One of the trade-offs is speed - this LLM is slower than llama-3.3-70b-versatile. The speed of results on gemini-3.1-flash-lite are roughly 3 seconds slower than the predecessor. 
+The LLM that DocuSieve runs on now is gemini-3.1-flash-lite. 
+The benefits of this model are the efficiency and generous token limits. One of the trade-offs is speed - this LLM is slower than llama-3.3-70b-versatile. The speed of results on Gemini-3.1-flash-lite is roughly 3 seconds slower than the predecessor. 
 ---> Another update: I now have an uptime robot running at all times to ensure that the backend does not go into sleep mode after 15 mins. This allows me to deal with cold-start whenever an analysis request is sent. <----
 
 DocuSieve is a resume analyzer that compares a **PDF resume** with a **job description** and generates:
